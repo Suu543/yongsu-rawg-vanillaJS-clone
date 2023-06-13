@@ -3,6 +3,8 @@ const container = document.querySelector(".container");
 const pagination = document.querySelector(".pagination");
 
 async function run() {
+  // "", false, 0, [], {}
+  let activeButton = "";
   const { results, page, previous, count } = await getGames();
   //   const nextPageUrl = data.next;
   //   const numOfPages = data.count / 20;
@@ -15,8 +17,22 @@ async function run() {
   for (let page = 1; page < 10; page++) {
     const button = document.createElement("button");
     button.textContent = page;
+
+    if (page == 1) {
+      activeButton = button;
+      button.classList.add("active");
+    }
+
     button.addEventListener("click", async (e) => {
       e.preventDefault();
+
+      if (activeButton) {
+        activeButton.classList.remove("active");
+      }
+
+      activeButton = e.target;
+      activeButton.classList.add("active");
+
       let data = await getGame(page);
       visualizeData(data);
     });

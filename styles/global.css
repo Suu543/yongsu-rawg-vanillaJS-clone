@@ -40,3 +40,18 @@ button {
   height: 70%;
   object-fit: cover;
 }
+
+.loading {
+  width: 700px;
+  height: 700px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-image: url("../images/giphy.gif");
+  display: none;
+  z-index: 9999;
+  transition: width 0.3s ease;
+}

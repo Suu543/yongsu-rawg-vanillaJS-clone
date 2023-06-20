@@ -1,19 +1,20 @@
 const root = document.getElementById("root");
 const container = document.querySelector(".container");
-const pagination = document.querySelector(".pagination");
+const pageWrapper = document.querySelector(".pagination");
+const loading = document.querySelector(".loading");
 let activeButton = "";
 
 async function run() {
-  // "", false, 0, [], {}
-  const { results, page, previous, count, next } = await getGames();
-  //   const nextPageUrl = data.next;
-  //   const numOfPages = data.count / 20;
-  //   console.log(numOfPages);
-
   // https://api.rawg.io/api/games?key=15bb57f3ba884c3dabfd98e4ab984b28&page=
+  // "", false, 0, [], {}
+  setLoading(true);
+  const { results, page, previous, count, next } = await getGames();
+  const numOfPages = Math.ceil(count / 20);
 
   visualizeData(results);
-  createNavigation(10);
+  createNavigation(1, numOfPages);
+
+  setLoading(false);
 }
 
 run();
@@ -68,29 +69,54 @@ function createElement(tag, text = "", classes = []) {
   return element;
 }
 
-function createNavigation(numOfPages) {
-  for (let page = 1; page < numOfPages; page++) {
-    const pageBtn = document.createElement("button");
-    pageBtn.textContent = page;
+function createNavigation(page, numOfPages) {
+  pageWrapper.textContent = "";
 
-    if (page === 1) {
+  const pages = pagination(page, numOfPages);
+
+  for (let i = 0; i < pages.length; i++) {
+    const pageBtn = document.createElement("button");
+    pageBtn.textContent = pages[i];
+
+    if (pages[i] == page) {
       activeButton = pageBtn;
       pageBtn.classList.add("active");
     }
 
-    pageBtn.addEventListener("click", async (e) => {
-      e.preventDefault();
+    if (typeof pages[i] === "number") {
+      pageBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        setLoading(true);
 
-      if (activeButton) {
-        activeButton.classList.remove("active");
-        activeButton = e.target;
-        activeButton.classList.add("active");
+        if (activeButton) {
+          activeButton.classList.remove("active");
+          activeButton = e.target;
+          activeButton.classList.add("active");
+        }
 
+        const page = parseInt(e.target.textContent);
         const newPageData = await getGame(page);
-        visualizeData(newPageData);
-      }
-    });
 
-    pagination.appendChild(pageBtn);
+        createNavigation(page, numOfPages);
+        visualizeData(newPageData);
+
+        setLoading(false);
+        scrollToTop();
+      });
+    }
+
+    pageWrapper.appendChild(pageBtn);
+  }
+}
+
+function setLoading(status) {
+  if (status) {
+    container.style.display = "none";
+    pageWrapper.style.display = "none";
+    loading.style.display = "block";
+  } else {
+    container.style.display = "grid";
+    pageWrapper.style.display = "block";
+    loading.style.display = "none";
   }
 }

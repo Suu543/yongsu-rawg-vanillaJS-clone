@@ -8,7 +8,7 @@ async function run() {
   // https://api.rawg.io/api/games?key=15bb57f3ba884c3dabfd98e4ab984b28&page=
   // "", false, 0, [], {}
   setLoading(true);
-  const { results, page, previous, count, next } = await getGames();
+  const { results, count } = await getGames();
   const numOfPages = Math.ceil(count / 20);
 
   visualizeData(results);
@@ -36,10 +36,12 @@ function cardComponent(cardInfo) {
   const { name, rating, background_image, released } = cardInfo;
   const cardWrapper = createElement("article", "", ["cardWrapper"]);
   const cardImg = createElement("img", background_image, ["cardImg"]);
-  const cardContent = createElement("div", "");
-  const cardTitle = createElement("h3", name);
-  const cardRating = createElement("span", rating);
-  const cardReleased = createElement("span", released);
+  const cardContent = createElement("div", "", ["cardContent"]);
+  const cardTitle = createElement("h3", name, ["cardTitle"]);
+  const cardRating = createElement("span", `rating: ${rating}`, ["cardRating"]);
+  const cardReleased = createElement("span", `released: ${released}`, [
+    "cardReleased",
+  ]);
 
   cardWrapper.appendChild(cardImg);
   cardWrapper.appendChild(cardContent);
@@ -116,7 +118,7 @@ function setLoading(status) {
     loading.style.display = "block";
   } else {
     container.style.display = "grid";
-    pageWrapper.style.display = "block";
+    pageWrapper.style.display = "flex";
     loading.style.display = "none";
   }
 }
